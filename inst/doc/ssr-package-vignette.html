@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Enrique Garcia-Ceja" />
+
+
+<title>Introduction to the ssr package</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to the ssr package</h1>
+<h4 class="author">Enrique Garcia-Ceja</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#fitting-your-first-model-with-ssr">Fitting your first model with <code>ssr</code></a></li>
+<li><a href="#specifying-regressors-parameters-with-regressors.params">Specifying regressors’ parameters with <code>regressors.params</code></a></li>
+<li><a href="#custom-functions">Custom Functions</a></li>
+<li><a href="#training-an-oracle-model">Training an Oracle model</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This package implements the <em>self-learning</em> and <em>Co-training by Committee</em> semi-supervised regression algorithms from a set of <em>n</em> base regressor(s) specified by the user. When only one model is present in the list of regressors, self-learning is performed. The Co-training by Committee implementation is based on Hady et al. (2009). It consists of a set of <em>n</em> base models (the committee), each, initially trained with independent bootstrap samples from the labeled training set <em>L</em>. The Out-of-Bag (OOB) elements are used for validation. The training set for each base model <em>b</em> is augmented by selecting the most relevant elements from the unlabeled data set <em>U</em>. To determine the most relevant elements for each base model <em>b</em>, the other models (excluding <em>b</em>) label a set of data <code>pool.size</code> points sampled from <em>U</em> by taking the average of their predictions. For each newly labeled data point, the base model <em>b</em> is trained with its current labeled training data plus the new data point and the error on its OOB validation data is computed. The top <code>gr</code> points that reduce the error the most are kept and used to augment the labeled training set of <em>b</em> and removed from <em>U</em>.</p>
+<p>When the <code>regressors</code> list contains a single model, <em>self-learning</em> is performed. That is, the base model labels its own data points as opposed to <em>Co-training by Committee</em> in which the data points for a given model are labeled by the other models.</p>
+<p>In the original paper, Hady et al. (2009) use the same type of regressor for the base models but with different parameters to introduce diversity. The <code>ssr</code> function allows the user to specify any type of regressors as the base models. The regressors can be models from the <strong>caret</strong> package, other packages, or custom functions. Models from other packages or custom functions need to comply with certain structure. First, the model’s function used for training must have a formula as its first parameter and a parameter named <em>data</em> that accepts a data frame as the training set. Secondly, the <code>predict()</code> function must have the trained model as its first parameter and a data frame as a second parameter. Most of the models from other libraries follow this pattern. If they do not follow this pattern, you can still use them by writing a wrapper function (See section ‘Custom Functions’).</p>
+<p>This document explains the following topics:</p>
+<ul>
+<li>Fit semi-supervised regression models with the <code>ssr</code> function.</li>
+<li>Plotting the results.</li>
+<li>Defining the <code>regressors</code> and <code>regressors.params</code> lists.</li>
+<li>Specify regressors from custom functions.</li>
+<li>Training an Oracle model.</li>
+</ul>
+</div>
+<div id="fitting-your-first-model-with-ssr" class="section level1">
+<h1>Fitting your first model with <code>ssr</code></h1>
+<p>Throughout this document we will be using the Friedman #1 dataset. An instance of this dataset is already included in the <strong>ssr</strong> package. The dataset has 10 input variables (X1..X10) and 1 response variable (Ytrue), all numeric. For more information about the dataset type <code>?friedman1</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(ssr)</a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3">dataset &lt;-<span class="st"> </span>friedman1 <span class="co"># Load friedman1 dataset.</span></a>
+<a class="sourceLine" id="cb1-4" title="4"></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="kw">head</span>(dataset)</a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="co">#&gt;          X1        X2         X3         X4        X5         X6        X7</span></a>
+<a class="sourceLine" id="cb1-7" title="7"><span class="co">#&gt; 1 0.1134795 0.8399474 0.11267556 0.96430749 0.1644563 0.08368120 0.3505353</span></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="co">#&gt; 2 0.6226043 0.4880453 0.19107638 0.20620675 0.7157168 0.17017763 0.3233741</span></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="co">#&gt; 3 0.6095661 0.1090480 0.61859262 0.08544048 0.4603640 0.70467854 0.6984391</span></a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="co">#&gt; 4 0.6236855 0.3512679 0.59912416 0.21548785 0.6389154 0.65350053 0.2480377</span></a>
+<a class="sourceLine" id="cb1-11" title="11"><span class="co">#&gt; 5 0.8614685 0.7629973 0.06036928 0.23914582 0.4559488 0.09086521 0.6226571</span></a>
+<a class="sourceLine" id="cb1-12" title="12"><span class="co">#&gt; 6 0.6406343 0.3897594 0.69961305 0.19658927 0.9485355 0.71688258 0.5748716</span></a>
+<a class="sourceLine" id="cb1-13" title="13"><span class="co">#&gt;           X8        X9        X10     Ytrue</span></a>
+<a class="sourceLine" id="cb1-14" title="14"><span class="co">#&gt; 1 0.02669855 0.1675178 0.08034975 0.5417472</span></a>
+<a class="sourceLine" id="cb1-15" title="15"><span class="co">#&gt; 2 0.67944169 0.4657235 0.03162659 0.5153556</span></a>
+<a class="sourceLine" id="cb1-16" title="16"><span class="co">#&gt; 3 0.18961889 0.2078145 0.18109117 0.1321456</span></a>
+<a class="sourceLine" id="cb1-17" title="17"><span class="co">#&gt; 4 0.91980858 0.7714593 0.08252948 0.3722591</span></a>
+<a class="sourceLine" id="cb1-18" title="18"><span class="co">#&gt; 5 0.52383235 0.4238548 0.94166606 0.5780382</span></a>
+<a class="sourceLine" id="cb1-19" title="19"><span class="co">#&gt; 6 0.69551194 0.8048951 0.99492079 0.4728131</span></a>
+<a class="sourceLine" id="cb1-20" title="20"></a>
+<a class="sourceLine" id="cb1-21" title="21"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
+<a class="sourceLine" id="cb1-22" title="22"></a>
+<a class="sourceLine" id="cb1-23" title="23"><span class="co"># Split the dataset into 70% for training and 30% for testing.</span></a>
+<a class="sourceLine" id="cb1-24" title="24">split1 &lt;-<span class="st"> </span><span class="kw">split_train_test</span>(dataset, <span class="dt">pctTrain =</span> <span class="dv">70</span>)</a>
+<a class="sourceLine" id="cb1-25" title="25"></a>
+<a class="sourceLine" id="cb1-26" title="26"><span class="co"># Choose 5% of the train set as the labeled set L and the remaining will be the unlabeled set U.</span></a>
+<a class="sourceLine" id="cb1-27" title="27">split2 &lt;-<span class="st"> </span><span class="kw">split_train_test</span>(split1<span class="op">$</span>trainset, <span class="dt">pctTrain =</span> <span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb1-28" title="28"></a>
+<a class="sourceLine" id="cb1-29" title="29">L &lt;-<span class="st"> </span>split2<span class="op">$</span>trainset <span class="co"># This is the labeled dataset.</span></a>
+<a class="sourceLine" id="cb1-30" title="30"></a>
+<a class="sourceLine" id="cb1-31" title="31">U &lt;-<span class="st"> </span>split2<span class="op">$</span>testset[, <span class="dv">-11</span>] <span class="co"># Remove the labels since this is the unlabeled dataset.</span></a>
+<a class="sourceLine" id="cb1-32" title="32"></a>
+<a class="sourceLine" id="cb1-33" title="33">testset &lt;-<span class="st"> </span>split1<span class="op">$</span>testset <span class="co"># This is the test set.</span></a></code></pre></div>
+<p>Now lets define a <em>Co-training by Committee</em> model with a linear model and a KNN model as base regressors. Regressors are specified as a list with strings and/or functions. In this case, the first regressor is the linear model “lm” defined in the caret package and the second model is a KNN but this time specified directly as a function. In this case, we are using <em>knnreg</em> also from the caret package but this could be from another package. For a list of available regressor models that can be passed as strings from the <strong>caret</strong> package please see <a href="https://topepo.github.io/caret/available-models.html">here</a>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co"># Define list of regressors.</span></a>
+<a class="sourceLine" id="cb2-2" title="2">regressors &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="st">&quot;lm&quot;</span>, <span class="dt">knn=</span>caret<span class="op">::</span>knnreg)</a>
+<a class="sourceLine" id="cb2-3" title="3"></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="co"># Fit the model and set maxits to 10. Depending on your system, this may take a couple of minutes.</span></a>
+<a class="sourceLine" id="cb2-5" title="5">model &lt;-<span class="st"> </span><span class="kw">ssr</span>(<span class="st">&quot;Ytrue ~ .&quot;</span>, L, U, <span class="dt">regressors =</span> regressors, <span class="dt">testdata =</span> testset, <span class="dt">maxits =</span> <span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="co">#&gt; [1] &quot;Initial RMSE on testdata: 0.1327&quot;</span></a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="co">#&gt; [1] &quot;Iteration 1 (testdata) RMSE: 0.1270 Improvement: 4.31%&quot;</span></a>
+<a class="sourceLine" id="cb2-8" title="8"><span class="co">#&gt; [1] &quot;Iteration 2 (testdata) RMSE: 0.1253 Improvement: 5.59%&quot;</span></a>
+<a class="sourceLine" id="cb2-9" title="9"><span class="co">#&gt; [1] &quot;Iteration 3 (testdata) RMSE: 0.1249 Improvement: 5.92%&quot;</span></a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="co">#&gt; [1] &quot;Iteration 4 (testdata) RMSE: 0.1233 Improvement: 7.07%&quot;</span></a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="co">#&gt; [1] &quot;Iteration 5 (testdata) RMSE: 0.1232 Improvement: 7.14%&quot;</span></a>
+<a class="sourceLine" id="cb2-12" title="12"><span class="co">#&gt; [1] &quot;Iteration 6 (testdata) RMSE: 0.1223 Improvement: 7.85%&quot;</span></a>
+<a class="sourceLine" id="cb2-13" title="13"><span class="co">#&gt; [1] &quot;Iteration 7 (testdata) RMSE: 0.1217 Improvement: 8.33%&quot;</span></a>
+<a class="sourceLine" id="cb2-14" title="14"><span class="co">#&gt; [1] &quot;Iteration 8 (testdata) RMSE: 0.1216 Improvement: 8.41%&quot;</span></a>
+<a class="sourceLine" id="cb2-15" title="15"><span class="co">#&gt; [1] &quot;Iteration 9 (testdata) RMSE: 0.1203 Improvement: 9.37%&quot;</span></a>
+<a class="sourceLine" id="cb2-16" title="16"><span class="co">#&gt; [1] &quot;Iteration 10 (testdata) RMSE: 0.1200 Improvement: 9.58%&quot;</span></a></code></pre></div>
+<p><strong>NOTE:</strong> If a regressor is specified as a function (<em>knnreg</em> in the above example), it has to be named. In this case, it was named <em>knn</em>. For regressors specified as strings, names are optional. In the above example, “lm” does not have a name.</p>
+<p><strong>ANOTHER NOTE:</strong> When specifying a regressor as a function, that function must accept as its first parameter a formula and another parameter named <em>data</em> that takes a data frame. The parameter <em>data</em> can be at any position of the original function but formula must be the first one. Most functions in other packages follow this pattern. If you want to use a function on a package that does not follow this pattern, you can write a custom wrapper function (See section ‘Custom Functions’). Additionally, the functions <code>predict()</code> method must accept a fitted model as its first argument and a data frame as the second argument.</p>
+<p>By default, <code>plotmetrics = FALSE</code> so no diagnostic plots are shown during training. To generate plots during training just set it to <code>TRUE</code>. Since the <code>verbose</code> parameter is <code>TRUE</code> by default, performance information is printed to the console including the initial Root Mean Squared Error (RMSE) and the RMSE during each iteration. The performance information is computed on the <code>testdata</code>, if provided. The initial RMSE is computed when the model is trained just on the labeled data <strong>L</strong> before using any data from the unlabeled set <strong>U</strong>. The improvement with respect to the initial RMSE is also shown. The improvement is computed as:</p>
+<p><span class="math display">\[improvement = \frac{RMSE_0 - RMSE_i}{RMSE_0}\]</span></p>
+<p>where <span class="math inline">\(RMSE_0\)</span> is the initial RMSE and <span class="math inline">\(RMSE_i\)</span> is the RMSE of the current iteration.</p>
+<p>You can plot the performance across iterations with the <code>plot()</code> function and get the predictions on new data with the <code>predict()</code> function.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># Plot RMSE.</span></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw">plot</span>(model)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="co"># Get the predictions on the testset.</span></a>
+<a class="sourceLine" id="cb4-3" title="3">predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(model, testset)</a>
+<a class="sourceLine" id="cb4-4" title="4"></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="co"># Calculate RMSE on the test set.</span></a>
+<a class="sourceLine" id="cb4-6" title="6">rmse.result &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">mean</span>((predictions <span class="op">-</span><span class="st"> </span>testset<span class="op">$</span>Ytrue)<span class="op">^</span><span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb4-7" title="7">rmse.result</a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="co">#&gt; [1] 0.1199968</span></a></code></pre></div>
+<p>You can also inspect other performance metrics by specifying the <code>metric</code> parameter to one of: “rmse”, “mae” or “cor”. You can also plot the results of the individual regressors by setting <code>ptype = 2</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">plot</span>(model, <span class="dt">metric =</span> <span class="st">&quot;mae&quot;</span>, <span class="dt">ptype =</span> <span class="dv">2</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="specifying-regressors-parameters-with-regressors.params" class="section level1">
+<h1>Specifying regressors’ parameters with <code>regressors.params</code></h1>
+<p>You can specify individual parameters (such as <em>k</em> for knn) for each regressor via the<code>regressors.params</code> parameter. This parameter accepts a list of lists. Currently, it is not possible to specify parameters for caret models defined as strings but just for the ones specified as functions. If you do not want to specify parameters for a regressor use <code>NULL</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="co"># Prepare data.</span></a>
+<a class="sourceLine" id="cb6-3" title="3">dataset &lt;-<span class="st"> </span>friedman1</a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
+<a class="sourceLine" id="cb6-5" title="5">split1 &lt;-<span class="st"> </span><span class="kw">split_train_test</span>(dataset, <span class="dt">pctTrain =</span> <span class="dv">70</span>)</a>
+<a class="sourceLine" id="cb6-6" title="6">split2 &lt;-<span class="st"> </span><span class="kw">split_train_test</span>(split1<span class="op">$</span>trainset, <span class="dt">pctTrain =</span> <span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb6-7" title="7">L &lt;-<span class="st"> </span>split2<span class="op">$</span>trainset</a>
+<a class="sourceLine" id="cb6-8" title="8">U &lt;-<span class="st"> </span>split2<span class="op">$</span>testset[, <span class="dv">-11</span>]</a>
+<a class="sourceLine" id="cb6-9" title="9">testset &lt;-<span class="st"> </span>split1<span class="op">$</span>testset</a>
+<a class="sourceLine" id="cb6-10" title="10"></a>
+<a class="sourceLine" id="cb6-11" title="11"><span class="co"># Define list of regressors.</span></a>
+<a class="sourceLine" id="cb6-12" title="12">regressors &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="st">&quot;lm&quot;</span>, <span class="dt">knn=</span>caret<span class="op">::</span>knnreg)</a>
+<a class="sourceLine" id="cb6-13" title="13"></a>
+<a class="sourceLine" id="cb6-14" title="14"><span class="co"># Specify their parameters. k = 7 for knnreg in this case.</span></a>
+<a class="sourceLine" id="cb6-15" title="15">regressors.params &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="ot">NULL</span>, <span class="kw">list</span>(<span class="dt">k=</span><span class="dv">7</span>))</a>
+<a class="sourceLine" id="cb6-16" title="16"></a>
+<a class="sourceLine" id="cb6-17" title="17">model2 &lt;-<span class="st"> </span><span class="kw">ssr</span>(<span class="st">&quot;Ytrue ~ .&quot;</span>, L, U,</a>
+<a class="sourceLine" id="cb6-18" title="18">             <span class="dt">regressors =</span> regressors,</a>
+<a class="sourceLine" id="cb6-19" title="19">             <span class="dt">regressors.params =</span> regressors.params,</a>
+<a class="sourceLine" id="cb6-20" title="20">             <span class="dt">maxits =</span> <span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb6-21" title="21">             <span class="dt">testdata =</span> testset)</a>
+<a class="sourceLine" id="cb6-22" title="22"></a>
+<a class="sourceLine" id="cb6-23" title="23"><span class="kw">plot</span>(model2)</a></code></pre></div>
+</div>
+<div id="custom-functions" class="section level1">
+<h1>Custom Functions</h1>
+<p>You can pass custom functions to the <code>regressors</code> parameter. For example if you have written your own regressor or want to write a wrapper around a function in another package that does not conform with the arguments pattern so you can do some pre-processing and accommodate for that.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="co"># Define a custom function.</span></a>
+<a class="sourceLine" id="cb7-3" title="3">myCustomModel &lt;-<span class="st"> </span><span class="cf">function</span>(theformula, data, myparam1){</a>
+<a class="sourceLine" id="cb7-4" title="4"></a>
+<a class="sourceLine" id="cb7-5" title="5">  <span class="co"># This is just a wrapper around knnreg but can be anything.</span></a>
+<a class="sourceLine" id="cb7-6" title="6">  <span class="co"># Our custom function also accepts one parameter myparam1.</span></a>
+<a class="sourceLine" id="cb7-7" title="7">  </a>
+<a class="sourceLine" id="cb7-8" title="8">  <span class="co"># Now we train a knnreg and pass our custom parameter.</span></a>
+<a class="sourceLine" id="cb7-9" title="9">  m &lt;-<span class="st"> </span>caret<span class="op">::</span><span class="kw">knnreg</span>(theformula, data, <span class="dt">k =</span> myparam1)</a>
+<a class="sourceLine" id="cb7-10" title="10">  </a>
+<a class="sourceLine" id="cb7-11" title="11">  <span class="kw">return</span>(m)</a>
+<a class="sourceLine" id="cb7-12" title="12">}</a>
+<a class="sourceLine" id="cb7-13" title="13"></a>
+<a class="sourceLine" id="cb7-14" title="14"><span class="co"># Prepare the data</span></a>
+<a class="sourceLine" id="cb7-15" title="15">dataset &lt;-<span class="st"> </span>friedman1</a>
+<a class="sourceLine" id="cb7-16" title="16"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
+<a class="sourceLine" id="cb7-17" title="17">split1 &lt;-<span class="st"> </span><span class="kw">split_train_test</span>(dataset, <span class="dt">pctTrain =</span> <span class="dv">70</span>)</a>
+<a class="sourceLine" id="cb7-18" title="18">split2 &lt;-<span class="st"> </span><span class="kw">split_train_test</span>(split1<span class="op">$</span>trainset, <span class="dt">pctTrain =</span> <span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb7-19" title="19">L &lt;-<span class="st"> </span>split2<span class="op">$</span>trainset</a>
+<a class="sourceLine" id="cb7-20" title="20">U &lt;-<span class="st"> </span>split2<span class="op">$</span>testset[, <span class="dv">-11</span>]</a>
+<a class="sourceLine" id="cb7-21" title="21">testset &lt;-<span class="st"> </span>split1<span class="op">$</span>testset</a>
+<a class="sourceLine" id="cb7-22" title="22"></a>
+<a class="sourceLine" id="cb7-23" title="23"><span class="co"># Specify our custom function as regressor.</span></a>
+<a class="sourceLine" id="cb7-24" title="24">regressors &lt;-<span class="st"> </span><span class="kw">list</span>(myCustomModel)</a>
+<a class="sourceLine" id="cb7-25" title="25"></a>
+<a class="sourceLine" id="cb7-26" title="26"><span class="co"># Specify the list of parameters.</span></a>
+<a class="sourceLine" id="cb7-27" title="27">regressors.params &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="dt">myparam1=</span><span class="dv">7</span>))</a>
+<a class="sourceLine" id="cb7-28" title="28"></a>
+<a class="sourceLine" id="cb7-29" title="29"><span class="co"># Fit the model.</span></a>
+<a class="sourceLine" id="cb7-30" title="30">model3 &lt;-<span class="st"> </span><span class="kw">ssr</span>(<span class="st">&quot;Ytrue ~ .&quot;</span>, L, U,</a>
+<a class="sourceLine" id="cb7-31" title="31">             <span class="dt">regressors =</span> regressors,</a>
+<a class="sourceLine" id="cb7-32" title="32">             <span class="dt">regressors.params =</span> regressors.params,</a>
+<a class="sourceLine" id="cb7-33" title="33">             <span class="dt">testdata =</span> testset)</a>
+<a class="sourceLine" id="cb7-34" title="34"><span class="co">#&gt; [1] &quot;Initial RMSE on testdata: 0.1693&quot;</span></a>
+<a class="sourceLine" id="cb7-35" title="35"><span class="co">#&gt; [1] &quot;Iteration 1 (testdata) RMSE: 0.1668 Improvement: 1.49%&quot;</span></a>
+<a class="sourceLine" id="cb7-36" title="36"><span class="co">#&gt; [1] &quot;Iteration 2 (testdata) RMSE: 0.1670 Improvement: 1.39%&quot;</span></a>
+<a class="sourceLine" id="cb7-37" title="37"><span class="co">#&gt; [1] &quot;Iteration 3 (testdata) RMSE: 0.1667 Improvement: 1.55%&quot;</span></a>
+<a class="sourceLine" id="cb7-38" title="38"><span class="co">#&gt; [1] &quot;Iteration 4 (testdata) RMSE: 0.1675 Improvement: 1.08%&quot;</span></a>
+<a class="sourceLine" id="cb7-39" title="39"><span class="co">#&gt; [1] &quot;Iteration 5 (testdata) RMSE: 0.1674 Improvement: 1.15%&quot;</span></a>
+<a class="sourceLine" id="cb7-40" title="40"><span class="co">#&gt; [1] &quot;Iteration 6 (testdata) RMSE: 0.1653 Improvement: 2.41%&quot;</span></a>
+<a class="sourceLine" id="cb7-41" title="41"><span class="co">#&gt; [1] &quot;Iteration 7 (testdata) RMSE: 0.1653 Improvement: 2.41%&quot;</span></a>
+<a class="sourceLine" id="cb7-42" title="42"><span class="co">#&gt; [1] &quot;Iteration 8 (testdata) RMSE: 0.1653 Improvement: 2.41%&quot;</span></a>
+<a class="sourceLine" id="cb7-43" title="43"><span class="co">#&gt; [1] &quot;Iteration 9 (testdata) RMSE: 0.1653 Improvement: 2.41%&quot;</span></a>
+<a class="sourceLine" id="cb7-44" title="44"><span class="co">#&gt; [1] &quot;Iteration 10 (testdata) RMSE: 0.1653 Improvement: 2.41%&quot;</span></a>
+<a class="sourceLine" id="cb7-45" title="45"><span class="co">#&gt; [1] &quot;Iteration 11 (testdata) RMSE: 0.1653 Improvement: 2.41%&quot;</span></a>
+<a class="sourceLine" id="cb7-46" title="46"><span class="co">#&gt; [1] &quot;Iteration 12 (testdata) RMSE: 0.1653 Improvement: 2.41%&quot;</span></a>
+<a class="sourceLine" id="cb7-47" title="47"><span class="co">#&gt; [1] &quot;Iteration 13 (testdata) RMSE: 0.1653 Improvement: 2.37%&quot;</span></a>
+<a class="sourceLine" id="cb7-48" title="48"><span class="co">#&gt; [1] &quot;Iteration 14 (testdata) RMSE: 0.1661 Improvement: 1.94%&quot;</span></a>
+<a class="sourceLine" id="cb7-49" title="49"><span class="co">#&gt; [1] &quot;Iteration 15 (testdata) RMSE: 0.1661 Improvement: 1.94%&quot;</span></a>
+<a class="sourceLine" id="cb7-50" title="50"><span class="co">#&gt; [1] &quot;Iteration 16 (testdata) RMSE: 0.1661 Improvement: 1.94%&quot;</span></a>
+<a class="sourceLine" id="cb7-51" title="51"><span class="co">#&gt; [1] &quot;Iteration 17 (testdata) RMSE: 0.1645 Improvement: 2.89%&quot;</span></a>
+<a class="sourceLine" id="cb7-52" title="52"><span class="co">#&gt; [1] &quot;Iteration 18 (testdata) RMSE: 0.1645 Improvement: 2.89%&quot;</span></a>
+<a class="sourceLine" id="cb7-53" title="53"><span class="co">#&gt; [1] &quot;Iteration 19 (testdata) RMSE: 0.1641 Improvement: 3.08%&quot;</span></a>
+<a class="sourceLine" id="cb7-54" title="54"><span class="co">#&gt; [1] &quot;Iteration 20 (testdata) RMSE: 0.1646 Improvement: 2.82%&quot;</span></a></code></pre></div>
+</div>
+<div id="training-an-oracle-model" class="section level1">
+<h1>Training an Oracle model</h1>
+<p>Sometimes it is useful to compare your model against an ‘Oracle’. In this context, an Oracle is a model that knows the true values of the unlabeled dataset <em>U</em>. This information is used when searching for the best candidates to augment the labeled set and once the best candidates are found, their true labels are used to train the models. This can be used to have an idea of the expected upper bound performance of the model. <em>This option should be used with caution</em> and not to be used to train a final model but just for comparison purposes. To train an Oracle model, just pass the true labels to the <code>U.y</code> parameter. When using this parameter, a warning will be printed.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="co"># Prepare the data</span></a>
+<a class="sourceLine" id="cb8-3" title="3">dataset &lt;-<span class="st"> </span>friedman1</a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
+<a class="sourceLine" id="cb8-5" title="5">split1 &lt;-<span class="st"> </span><span class="kw">split_train_test</span>(dataset, <span class="dt">pctTrain =</span> <span class="dv">70</span>)</a>
+<a class="sourceLine" id="cb8-6" title="6">split2 &lt;-<span class="st"> </span><span class="kw">split_train_test</span>(split1<span class="op">$</span>trainset, <span class="dt">pctTrain =</span> <span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb8-7" title="7">L &lt;-<span class="st"> </span>split2<span class="op">$</span>trainset</a>
+<a class="sourceLine" id="cb8-8" title="8">U &lt;-<span class="st"> </span>split2<span class="op">$</span>testset[, <span class="dv">-11</span>]</a>
+<a class="sourceLine" id="cb8-9" title="9">testset &lt;-<span class="st"> </span>split1<span class="op">$</span>testset</a>
+<a class="sourceLine" id="cb8-10" title="10"></a>
+<a class="sourceLine" id="cb8-11" title="11"><span class="co"># Get the true labels for the unlabeled set.</span></a>
+<a class="sourceLine" id="cb8-12" title="12">U.y &lt;-<span class="st"> </span>split2<span class="op">$</span>testset[, <span class="dv">11</span>]</a>
+<a class="sourceLine" id="cb8-13" title="13"></a>
+<a class="sourceLine" id="cb8-14" title="14"><span class="co"># Define list of regressors.</span></a>
+<a class="sourceLine" id="cb8-15" title="15">regressors &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="st">&quot;lm&quot;</span>, <span class="dt">knn=</span>caret<span class="op">::</span>knnreg)</a>
+<a class="sourceLine" id="cb8-16" title="16"></a>
+<a class="sourceLine" id="cb8-17" title="17"><span class="co"># Fit the model.</span></a>
+<a class="sourceLine" id="cb8-18" title="18">model4 &lt;-<span class="st"> </span><span class="kw">ssr</span>(<span class="st">&quot;Ytrue ~ .&quot;</span>, L, U,</a>
+<a class="sourceLine" id="cb8-19" title="19">              <span class="dt">regressors =</span> regressors,</a>
+<a class="sourceLine" id="cb8-20" title="20">              <span class="dt">testdata =</span> testset,</a>
+<a class="sourceLine" id="cb8-21" title="21">              <span class="dt">maxits =</span> <span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb8-22" title="22">              <span class="dt">U.y =</span> U.y)</a>
+<a class="sourceLine" id="cb8-23" title="23"><span class="co">#&gt; Warning in ssr(&quot;Ytrue ~ .&quot;, L, U, regressors = regressors, testdata = testset, : U.y was provided. Be cautious when providing this parameter since this will assume</span></a>
+<a class="sourceLine" id="cb8-24" title="24"><span class="co">#&gt;             that the labels from U are known. This is intended to be used to estimate a performance upper bound.</span></a>
+<a class="sourceLine" id="cb8-25" title="25"><span class="co">#&gt; [1] &quot;Initial RMSE on testdata: 0.1327&quot;</span></a>
+<a class="sourceLine" id="cb8-26" title="26"><span class="co">#&gt; [1] &quot;Iteration 1 (testdata) RMSE: 0.1250 Improvement: 5.83%&quot;</span></a>
+<a class="sourceLine" id="cb8-27" title="27"><span class="co">#&gt; [1] &quot;Iteration 2 (testdata) RMSE: 0.1240 Improvement: 6.59%&quot;</span></a>
+<a class="sourceLine" id="cb8-28" title="28"><span class="co">#&gt; [1] &quot;Iteration 3 (testdata) RMSE: 0.1203 Improvement: 9.38%&quot;</span></a>
+<a class="sourceLine" id="cb8-29" title="29"><span class="co">#&gt; [1] &quot;Iteration 4 (testdata) RMSE: 0.1135 Improvement: 14.51%&quot;</span></a>
+<a class="sourceLine" id="cb8-30" title="30"><span class="co">#&gt; [1] &quot;Iteration 5 (testdata) RMSE: 0.1110 Improvement: 16.33%&quot;</span></a>
+<a class="sourceLine" id="cb8-31" title="31"><span class="co">#&gt; [1] &quot;Iteration 6 (testdata) RMSE: 0.1102 Improvement: 16.97%&quot;</span></a>
+<a class="sourceLine" id="cb8-32" title="32"><span class="co">#&gt; [1] &quot;Iteration 7 (testdata) RMSE: 0.1107 Improvement: 16.59%&quot;</span></a>
+<a class="sourceLine" id="cb8-33" title="33"><span class="co">#&gt; [1] &quot;Iteration 8 (testdata) RMSE: 0.1082 Improvement: 18.44%&quot;</span></a>
+<a class="sourceLine" id="cb8-34" title="34"><span class="co">#&gt; [1] &quot;Iteration 9 (testdata) RMSE: 0.1079 Improvement: 18.69%&quot;</span></a>
+<a class="sourceLine" id="cb8-35" title="35"><span class="co">#&gt; [1] &quot;Iteration 10 (testdata) RMSE: 0.1073 Improvement: 19.12%&quot;</span></a>
+<a class="sourceLine" id="cb8-36" title="36"></a>
+<a class="sourceLine" id="cb8-37" title="37"><span class="kw">plot</span>(model4)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"></a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="co"># Get the predictions on the testset.</span></a>
+<a class="sourceLine" id="cb9-3" title="3">predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(model4, testset)</a>
+<a class="sourceLine" id="cb9-4" title="4"></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="co"># Calculate RMSE on the test set.</span></a>
+<a class="sourceLine" id="cb9-6" title="6"><span class="kw">sqrt</span>(<span class="kw">mean</span>((predictions <span class="op">-</span><span class="st"> </span>testset<span class="op">$</span>Ytrue)<span class="op">^</span><span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb9-7" title="7"><span class="co">#&gt; [1] 0.1073335</span></a></code></pre></div>
+<p>In this case the RMSE on the test data was 0.1073335 which is lower than the rmse of our first model (0.1199968).</p>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<p>Hady, M. F. A., Schwenker, F., &amp; Palm, G. (2009). <em>Semi-supervised Learning for Regression with Co-training by Committee.</em> In International Conference on Artificial Neural Networks (pp. 121-130). Springer, Berlin, Heidelberg.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

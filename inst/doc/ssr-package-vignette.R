@@ -28,10 +28,16 @@ testset <- split1$testset # This is the test set.
 
 ## ----message=FALSE, cache=F----------------------------------------------
 # Define list of regressors.
-regressors <- list("lm", knn=caret::knnreg)
+regressors <- list(linearRegression=lm, knn=caret::knnreg, svm=e1071::svm)
 
-# Fit the model and set maxits to 10. Depending on your system, this may take a couple of minutes.
-model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
+# Fit the model.
+model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
+
+## ----message=FALSE, eval = F---------------------------------------------
+#  regressors <- list("lm", "rvmLinear")
+
+## ----message=FALSE, eval = F---------------------------------------------
+#  regressors <- list("lm", knn=caret::knnreg)
 
 ## ----fig.height=5, fig.width=7-------------------------------------------
 # Plot RMSE.
@@ -59,7 +65,7 @@ plot(model, metric = "mae", ptype = 2)
 #  testset <- split1$testset
 #  
 #  # Define list of regressors.
-#  regressors <- list("lm", knn=caret::knnreg)
+#  regressors <- list(linearRegression=lm, knn=caret::knnreg)
 #  
 #  # Specify their parameters. k = 7 for knnreg in this case.
 #  regressors.params <- list(NULL, list(k=7))
@@ -67,7 +73,6 @@ plot(model, metric = "mae", ptype = 2)
 #  model2 <- ssr("Ytrue ~ .", L, U,
 #               regressors = regressors,
 #               regressors.params = regressors.params,
-#               maxits = 10,
 #               testdata = testset)
 #  
 #  plot(model2)
@@ -97,7 +102,7 @@ U <- split2$testset[, -11]
 testset <- split1$testset
 
 # Specify our custom function as regressor.
-regressors <- list(myCustomModel)
+regressors <- list(customModel = myCustomModel)
 
 # Specify the list of parameters.
 regressors.params <- list(list(myparam1=7))
@@ -124,13 +129,12 @@ testset <- split1$testset
 U.y <- split2$testset[, 11]
 
 # Define list of regressors.
-regressors <- list("lm", knn=caret::knnreg)
+regressors <- list(linearRegression=lm, knn=caret::knnreg, svm=e1071::svm)
 
 # Fit the model.
 model4 <- ssr("Ytrue ~ .", L, U,
               regressors = regressors,
               testdata = testset,
-              maxits = 10,
               U.y = U.y)
 
 plot(model4)
@@ -141,4 +145,17 @@ predictions <- predict(model4, testset)
 # Calculate RMSE on the test set.
 sqrt(mean((predictions - testset$Ytrue)^2))
 
+
+## ---- eval = F-----------------------------------------------------------
+#  Enrique Garcia-Ceja (2019). ssr: Semi-Supervised Regression Methods.
+#  R package https://CRAN.R-project.org/package=ssr
+
+## ---- eval = F-----------------------------------------------------------
+#  @Manual{enriqueSSR,
+#      title = {ssr: Semi-Supervised Regression Methods},
+#      author = {Enrique Garcia-Ceja},
+#      year = {2019},
+#      note = {R package},
+#      url = {https://CRAN.R-project.org/package=ssr},
+#    }
 
